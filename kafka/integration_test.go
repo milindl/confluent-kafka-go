@@ -1283,7 +1283,7 @@ func TestAdminClient_DeleteGroups(t *testing.T) {
 	defer ac.Close()
 
 	// Check that our group is not present initially.
-	groups, err := ac.ListConsumerGroups(nil, 30*time.Second)
+	groups, err := ac.ListConsumerGroups(SetListConsumerGroupsOptionRequestTimeout(30 * time.Second))
 	if err != nil {
 		t.Errorf("Error listing consumer groups %s\n", err)
 		return
@@ -1330,7 +1330,7 @@ func TestAdminClient_DeleteGroups(t *testing.T) {
 	}
 
 	// Check that the group exists.
-	groups, err = ac.ListConsumerGroups(nil, 30*time.Second)
+	groups, err = ac.ListConsumerGroups(SetListConsumerGroupsOptionRequestTimeout(30 * time.Second))
 	if err != nil {
 		t.Errorf("Error listing consumer groups %s\n", err)
 		return
@@ -1386,7 +1386,7 @@ func TestAdminClient_DeleteGroups(t *testing.T) {
 	}
 
 	// Check for the absence of the consumer group after deletion.
-	groups, err = ac.ListConsumerGroups(nil, 30*time.Second)
+	groups, err = ac.ListConsumerGroups(SetListConsumerGroupsOptionRequestTimeout(30 * time.Second))
 	if err != nil {
 		t.Errorf("Error listing consumer groups %s\n", err)
 		return
@@ -1445,7 +1445,7 @@ func TestAdminClient_ListAndDescribeGroups(t *testing.T) {
 	}()
 
 	// Check the non-existence of consumer groups initially.
-	groups, err := ac.ListConsumerGroups(nil, 30*time.Second)
+	groups, err := ac.ListConsumerGroups(SetListConsumerGroupsOptionRequestTimeout(30 * time.Second))
 	if err != nil {
 		t.Errorf("Error listing consumer groups %s\n", err)
 		return
@@ -1484,7 +1484,7 @@ func TestAdminClient_ListAndDescribeGroups(t *testing.T) {
 	consumer1.Poll(10 * 1000)
 
 	// Check the existence of the group.
-	groups, err = ac.ListConsumerGroups(nil, 30*time.Second)
+	groups, err = ac.ListConsumerGroups(SetListConsumerGroupsOptionRequestTimeout(30 * time.Second))
 	if err != nil {
 		t.Errorf("Error listing consumer groups %s\n", err)
 		return
@@ -1496,7 +1496,9 @@ func TestAdminClient_ListAndDescribeGroups(t *testing.T) {
 	}
 
 	// Test the description of the consumer group.
-	groups, err = ac.DescribeConsumerGroups([]string{groupID}, 30*time.Second)
+	groups, err = ac.DescribeConsumerGroups(
+		[]string{groupID},
+		SetDescribeConsumerGroupsOptionRequestTimeout(30*time.Second))
 	if err != nil {
 		t.Errorf("Error describing consumer groups %s\n", err)
 		return
@@ -1551,7 +1553,7 @@ func TestAdminClient_ListAndDescribeGroups(t *testing.T) {
 	for polled := 0; polled < 10; polled++ {
 		consumer2.Poll(5 * 1000)
 		consumer1.Poll(5 * 1000)
-		groups, err = ac.DescribeConsumerGroups(nil, 30*time.Second)
+		groups, err = ac.DescribeConsumerGroups(nil, SetDescribeConsumerGroupsOptionRequestTimeout(30*time.Second))
 		if err != nil {
 			t.Errorf("Error describing consumer groups %s\n", err)
 			return
@@ -1593,7 +1595,7 @@ func TestAdminClient_ListAndDescribeGroups(t *testing.T) {
 	consumer2Closed = true
 
 	// Try describing an empty group.
-	groups, err = ac.DescribeConsumerGroups(nil, 30*time.Second)
+	groups, err = ac.DescribeConsumerGroups(nil, SetDescribeConsumerGroupsOptionRequestTimeout(30*time.Second))
 	if err != nil {
 		t.Errorf("Error describing consumer groups %s\n", err)
 		return
@@ -1612,9 +1614,7 @@ func TestAdminClient_ListAndDescribeGroups(t *testing.T) {
 
 	// Try listing the Empty consumer group, and make sure that the States option
 	// works while listing.
-	groups, err = ac.ListConsumerGroups(&ListConsumerGroupsOptions{
-		States: []ConsumerGroupState{ConsumerGroupStateEmpty},
-	}, 30*time.Second)
+	groups, err = ac.ListConsumerGroups(SetListConsumerGroupsOptionRequestTimeout(30 * time.Second))
 	if err != nil {
 		t.Errorf("Error listing consumer groups %s\n", err)
 		return
@@ -1626,9 +1626,9 @@ func TestAdminClient_ListAndDescribeGroups(t *testing.T) {
 		return
 	}
 
-	groups, err = ac.ListConsumerGroups(&ListConsumerGroupsOptions{
-		States: []ConsumerGroupState{ConsumerGroupStateStable},
-	}, 30*time.Second)
+	groups, err = ac.ListConsumerGroups(
+		SetListConsumerGroupsOptionConsumerGroupState([]ConsumerGroupState{ConsumerGroupStateStable}),
+		SetListConsumerGroupsOptionRequestTimeout(30*time.Second))
 	if err != nil {
 		t.Errorf("Error listing consumer groups %s\n", err)
 		return
