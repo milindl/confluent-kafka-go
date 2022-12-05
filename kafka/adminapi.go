@@ -221,7 +221,9 @@ type MemberAssignment struct {
 // MemberDescription represents the description of a consumer group member.
 type MemberDescription struct {
 	// Client id.
-	CientId string
+	ClientId string
+	// Group instance id.
+	GroupInstanceId string
 	// Consumer id.
 	ConsumerId string
 	// Group member host.
@@ -849,15 +851,16 @@ func (a *AdminClient) cToConsumerGroupDescriptions(
 				memberAssignment.TopicPartitions = newTopicPartitionsFromCparts(cToppars)
 			}
 			members[midx] = MemberDescription{
-				CientId: C.GoString(
+				ClientId: C.GoString(
 					C.rd_kafka_MemberDescription_client_id(cMember)),
+				GroupInstanceId: C.GoString(
+					C.rd_kafka_MemberDescription_group_instance_id(cMember)),
 				ConsumerId: C.GoString(
 					C.rd_kafka_MemberDescription_consumer_id(cMember)),
 				Host: C.GoString(
 					C.rd_kafka_MemberDescription_host(cMember)),
 				MemberAssignment: memberAssignment,
 			}
-
 		}
 
 		result[idx] = ConsumerGroupDescription{
