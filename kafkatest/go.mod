@@ -1,6 +1,6 @@
-module github.com/confluentinc/confluent-kafka-go/kafkatest
+module github.com/confluentinc/confluent-kafka-go/v2/kafkatest
 
-go 1.13
+go 1.14
 
 replace github.com/confluentinc/confluent-kafka-go => ../
 
